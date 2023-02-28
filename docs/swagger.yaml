@@ -1,0 +1,26 @@
+basePath: /api
+info:
+  contact:
+    email: alper.uslu@enuygun.com
+    name: API Support
+  termsOfService: http://swagger.io/terms/
+  title: API
+  version: "1.0"
+paths:
+  /v1/test:
+    post:
+      consumes:
+      - application/json
+      description: get test data
+      produces:
+      - application/json
+      responses: {}
+      summary: Test
+      tags:
+      - Test
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
