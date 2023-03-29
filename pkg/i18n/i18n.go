@@ -18,7 +18,7 @@ func SetupI18n() {
 	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
 
 	for _, lang := range languages {
-		files, err := ioutil.ReadDir("./i18n/locale/" + lang)
+		files, err := ioutil.ReadDir("./pkg/i18n/locale/" + lang)
 		if err != nil {
 			panic(err)
 		}
@@ -26,7 +26,7 @@ func SetupI18n() {
 			if file.IsDir() {
 				continue
 			}
-			if _, err := bundle.LoadMessageFile("./i18n/locale/" + lang + "/" + file.Name()); err != nil {
+			if _, err := bundle.LoadMessageFile("./pkg/i18n/locale/" + lang + "/" + file.Name()); err != nil {
 				panic(err)
 			}
 		}

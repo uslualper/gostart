@@ -2,18 +2,17 @@ package main
 
 import (
 	"strings"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/template/html"
 
-	"go-start/config"
-	db "go-start/db"
-	"go-start/i18n"
-	"go-start/router"
+	"go-start/pkg/cache"
+	"go-start/pkg/config"
+	"go-start/pkg/db"
+	"go-start/pkg/i18n"
+	"go-start/pkg/router"
 )
 
 // @title API
@@ -49,13 +48,9 @@ func main() {
 		Level: compress.LevelBestSpeed,
 	}))
 
-	app.Use(limiter.New(limiter.Config{
-		Max:                    100,
-		Expiration:             1 * time.Minute,
-		SkipSuccessfulRequests: true,
-	}))
-
 	db.SetupDB()
+
+	cache.SetupCache()
 
 	router.SetupRoutes(app)
 

@@ -3,9 +3,10 @@ package handlers
 import (
 	"github.com/gofiber/fiber/v2"
 
-	payloadScheme "go-start/schema/payload/v1/test"
-	responseScheme "go-start/schema/response/v1/test"
-	"go-start/utils/validate"
+	"go-start/pkg/cache"
+	payloadScheme "go-start/pkg/schema/payload/v1/test"
+	responseScheme "go-start/pkg/schema/response/v1/test"
+	"go-start/pkg/utils/validate"
 )
 
 type Test struct{}
@@ -26,8 +27,16 @@ func (t *Test) Test(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusNotAcceptable).JSON(err)
 	}
 
+	cache.Cache().Set("test", testValid.Message)
+	cacheValue, cacheErr := cache.Cache().Get("test")
+
+	if cacheErr != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(cacheErr)
+	}
+
 	testResponse := responseScheme.Test{
-		Message: testValid.Message + " (Test)",
+		Message: testValid.Message,
+		Cache:   cacheValue,
 	}
 
 	return c.JSON(testResponse)

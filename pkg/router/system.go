@@ -1,11 +1,11 @@
 package router
 
 import (
-	"go-start/config"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
+
+	"go-start/pkg/config"
 )
 
 type System struct{}

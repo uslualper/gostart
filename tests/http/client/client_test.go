@@ -3,7 +3,7 @@ package client
 import (
 	"testing"
 
-	"go-start/utils/http"
+	"go-start/pkg/utils/http"
 )
 
 func TestClient(t *testing.T) {

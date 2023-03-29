@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 
-	handlersV1 "go-start/handlers/api/v1"
+	handlersV1 "go-start/pkg/handlers/api/v1"
 )
 
 type Test struct{}

@@ -8,7 +8,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	"go-start/config"
+	"go-start/pkg/config"
 )
 
 var Mysql *gorm.DB
