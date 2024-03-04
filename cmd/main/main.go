@@ -34,7 +34,7 @@ func main() {
 		Immutable: true,
 		Views:     html.New("./pkg/views", ".html"),
 		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
-			log.Instance().Error(log.System, log.Context{Message: err.Error(), Trace: "main"}, 0)
+			log.Instance().Error(log.System, log.Context(err.Error(), "main"), 0)
 			return err
 		},
 	})

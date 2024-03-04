@@ -11,5 +11,6 @@ type Log struct {
 	Level     int                `bson:"level"`
 	Type      string             `bson:"type"`
 	Owner     string             `bson:"owner"`
+	Context   interface{}        `bson:"context"`
 	CreatedAt time.Time          `bson:"created_at"`
 }

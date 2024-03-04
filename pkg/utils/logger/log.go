@@ -1,5 +1,10 @@
 package logger
 
+import (
+	"fmt"
+	logSchema "gostart/pkg/schema/logger"
+)
+
 type OwnerType string
 
 const (
@@ -15,17 +20,6 @@ const (
 	Info    LogType = "info"
 )
 
-type Param struct {
-	Key   string `bson:"key"`
-	Value string `bson:"value"`
-}
-
-type Context struct {
-	Trace   string  `bson:"trace"`
-	Message string  `bson:"message"`
-	Params  []Param `bson:"params,omitempty"`
-}
-
 type LogHandlerType string
 
 const (
@@ -33,7 +27,7 @@ const (
 )
 
 type LogHandler interface {
-	Save(owner OwnerType, context Context, typ LogType, level int)
+	Save(owner OwnerType, context logSchema.Context, typ LogType, level int)
 }
 
 var log *Logger
@@ -45,6 +39,29 @@ type Logger struct {
 
 func Instance() *Logger {
 	return log
+}
+
+func Context(message string, trace string, params ...map[string]string) logSchema.Context {
+	return logSchema.Context{
+		Message: message,
+		Trace:   trace,
+		Params:  getParams(params...),
+	}
+}
+
+func getParams(params ...map[string]string) []logSchema.Param {
+	var logParams []logSchema.Param
+
+	for _, p := range params {
+		for k, v := range p {
+			logParams = append(logParams, logSchema.Param{
+				Key:   k,
+				Value: v,
+			})
+		}
+	}
+
+	return logParams
 }
 
 func InitLogger(debug bool, handlers ...LogHandlerType) *Logger {
@@ -71,24 +88,24 @@ func getHandlers(handlers ...LogHandlerType) []LogHandler {
 	return logHandlers
 }
 
-func (l *Logger) Error(owner OwnerType, context Context, level int) {
+func (l *Logger) Error(owner OwnerType, context logSchema.Context, level int) {
 	l.log(owner, context, Error, level)
 }
 
-func (l *Logger) Warning(owner OwnerType, context Context, level int) {
+func (l *Logger) Warning(owner OwnerType, context logSchema.Context, level int) {
 	l.log(owner, context, Warning, level)
 }
 
-func (l *Logger) Info(owner OwnerType, context Context, level int) {
+func (l *Logger) Info(owner OwnerType, context logSchema.Context, level int) {
 	l.log(owner, context, Info, level)
 }
 
-func (l *Logger) log(owner OwnerType, context Context, typ LogType, level int) {
+func (l *Logger) log(owner OwnerType, context logSchema.Context, typ LogType, level int) {
 	for _, h := range l.handlers {
 		h.Save(owner, context, typ, level)
 	}
 
 	if l.debug {
-		panic(context)
+		fmt.Println("owner:", owner, "type:", typ, "level:", level, "context:", context)
 	}
 }

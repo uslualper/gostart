@@ -3,6 +3,7 @@ package logger
 import (
 	"context"
 	"gostart/pkg/db"
+	logSchema "gostart/pkg/schema/logger"
 	mongoSchema "gostart/pkg/schema/mongodb"
 	"time"
 
@@ -11,10 +12,11 @@ import (
 
 type Mongo struct{}
 
-func (m *Mongo) Save(owner OwnerType, logContext Context, typ LogType, level int) {
+func (m *Mongo) Save(owner OwnerType, logContext logSchema.Context, typ LogType, level int) {
 	log := mongoSchema.Log{
 		ID:        primitive.NewObjectID(),
 		Owner:     string(owner),
+		Context:   logContext,
 		Type:      string(typ),
 		Level:     level,
 		CreatedAt: time.Now(),
