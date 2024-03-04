@@ -4,6 +4,7 @@ import (
 	"gostart/pkg/i18n"
 
 	"github.com/gofiber/fiber/v2"
+	"golang.org/x/text/language"
 
 	payloadScheme "gostart/pkg/schema/payload/v1/test"
 	responseScheme "gostart/pkg/schema/response/v1/test"
@@ -29,8 +30,8 @@ func (t *Test) Test(c *fiber.Ctx) error {
 	testResponse := responseScheme.Test{
 		Message: testValid.Message,
 		Translate: map[string]string{
-			"en": i18n.Translate("en", "welcome"),
-			"tr": i18n.Translate("tr", "welcome"),
+			"en": i18n.Translate(language.English.String(), "Welcome"),
+			"tr": i18n.Translate(language.Turkish.String(), "Welcome"),
 		},
 	}
 
