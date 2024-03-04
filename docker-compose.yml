@@ -2,8 +2,8 @@ version: "3.8"
 
 services:
   app:
-    container_name: go-start
-    image: go-start
+    container_name: gostart
+    image: gostart
     build:
       context: .
       dockerfile: ./docker/app.dockerfile
@@ -11,4 +11,60 @@ services:
       - .:/app
     env_file: .env
     ports:
-      - 3000:3000
+      - ${APP_PORT}:3000
+    depends_on:
+      - mysql-db
+      - mongodb
+      - memcached
+    networks:
+      - gostart-network
+
+  mysql-db:
+    container_name: gostart-db
+    image: mysql:8.2
+    restart: unless-stopped
+    ports:
+        - ${MYSQL_PORT}:3306
+    environment:
+        MYSQL_DATABASE: ${MYSQL_DATABASE}
+        MYSQL_USER: ${MYSQL_USER}
+        MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+        - mysql:/var/lib/mysql
+    expose:
+        - ${MYSQL_PORT}
+    networks:
+        - gostart-network
+  
+  mongodb:
+    container_name: gostart-mongodb
+    image: mongo:7.0.2
+    restart: unless-stopped
+    ports:
+        - ${MONGODB_PORT}:27017
+    env_file:
+        - .env
+    volumes:
+        - mongodb:/data/db
+    networks:
+        - gostart-network
+
+  memcached:
+    container_name: gostart-memcached
+    image: memcached:latest
+    restart: unless-stopped
+    ports:
+        - ${MEMCACHED_PORT}:11211
+    networks:
+        - gostart-network
+
+networks:
+    gostart-network:
+      name: gostart-network
+      driver: bridge
+
+volumes:
+  mongodb:
+  mysql:
+

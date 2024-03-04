@@ -2,27 +2,26 @@ package db
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 
-	"go-start/pkg/config"
+	"gostart/pkg/config"
 )
 
 var Mysql *gorm.DB
 
 func ConnectMysql() {
 	var err error
-	p := config.Config("DB_PORT")
+	p := config.GetString("MYSQL_PORT")
 	port, err := strconv.ParseUint(p, 10, 32)
 
 	if err != nil {
-		log.Println("Idiot")
+		panic(err)
 	}
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", config.Config("DB_USER"), config.Config("DB_PASSWORD"), config.Config("DB_HOST"), port, config.Config("DB_NAME"))
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", config.GetString("MYSQL_USER"), config.GetString("MYSQL_PASSWORD"), config.GetString("MYSQL_HOST"), port, config.GetString("MYSQL_DATABASE"))
 
 	Mysql, err = gorm.Open(mysql.Open(dsn))
 

@@ -1,8 +1,8 @@
 package cache
 
 import (
-	"go-start/pkg/cache/memcached"
-	"go-start/pkg/config"
+	"gostart/pkg/cache/memcached"
+	"gostart/pkg/config"
 )
 
 var client Client
@@ -13,7 +13,7 @@ type Client interface {
 }
 
 func SetupCache() {
-	client = memcached.NewMemcacheClient([]string{config.Config("MEMCACHED_HOST") + ":" + config.Config("MEMCACHED_PORT")})
+	client = memcached.NewMemcacheClient([]string{config.GetString("MEMCACHED_HOST") + ":" + config.GetString("MEMCACHED_PORT")})
 }
 
 func Cache() Client {

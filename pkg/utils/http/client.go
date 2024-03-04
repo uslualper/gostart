@@ -8,7 +8,7 @@ import (
 
 type Client struct {
 	req     *fasthttp.Request
-	timeout int
+	timeout time.Duration
 }
 
 func (c *Client) Init(url string) {
@@ -18,7 +18,7 @@ func (c *Client) Init(url string) {
 }
 
 func (c *Client) SetTimeout(timeout int) {
-	c.timeout = timeout * int(time.Second)
+	c.timeout = time.Duration(timeout) * time.Second
 }
 
 func (c *Client) AddHeader(key, value string) {
@@ -33,52 +33,31 @@ func (c *Client) SetAuthorization(authorization string) {
 	c.req.Header.Set("Authorization", authorization)
 }
 
-func (c *Client) Post(body []byte) (response []byte, status int) {
-
-	c.req.Header.SetMethod("POST")
+func (c *Client) executeRequest(method string, body []byte) (response []byte, status int) {
+	c.req.Header.SetMethod(method)
 	c.req.SetBody(body)
 
 	resp := fasthttp.AcquireResponse()
-	client := &fasthttp.Client{}
+	defer fasthttp.ReleaseResponse(resp)
 
-	err := client.DoTimeout(c.req, resp, time.Duration(c.timeout))
+	client := &fasthttp.Client{}
+	err := client.DoTimeout(c.req, resp, c.timeout)
 
 	if err != nil {
-		return nil, resp.StatusCode()
+		return nil, fasthttp.StatusInternalServerError
 	}
 
 	return resp.Body(), resp.StatusCode()
+}
+
+func (c *Client) Post(body []byte) (response []byte, status int) {
+	return c.executeRequest("POST", body)
 }
 
 func (c *Client) Get() (response []byte, status int) {
-
-	c.req.Header.SetMethod("GET")
-
-	resp := fasthttp.AcquireResponse()
-	client := &fasthttp.Client{}
-
-	err := client.DoTimeout(c.req, resp, time.Duration(c.timeout))
-
-	if err != nil {
-		return nil, resp.StatusCode()
-	}
-
-	return resp.Body(), resp.StatusCode()
+	return c.executeRequest("GET", nil)
 }
 
 func (c *Client) Put(body []byte) (response []byte, status int) {
-
-	c.req.Header.SetMethod("PUT")
-	c.req.SetBody(body)
-
-	resp := fasthttp.AcquireResponse()
-	client := &fasthttp.Client{}
-
-	err := client.DoTimeout(c.req, resp, time.Duration(c.timeout))
-
-	if err != nil {
-		return nil, resp.StatusCode()
-	}
-
-	return resp.Body(), resp.StatusCode()
+	return c.executeRequest("PUT", body)
 }

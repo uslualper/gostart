@@ -1,15 +1,20 @@
 package config
 
 import (
-	"os"
-
-	"github.com/joho/godotenv"
+	"github.com/spf13/viper"
 )
 
-func Config(key string) string {
-	err := godotenv.Load(".env")
-	if err != nil {
-		panic(err)
+func Load(envFile string) {
+	viper.SetConfigFile(envFile)
+	if err := viper.ReadInConfig(); err != nil {
+		viper.AutomaticEnv()
 	}
-	return os.Getenv(key)
+}
+
+func GetString(key string) string {
+	return viper.GetString(key)
+}
+
+func GetBool(key string) bool {
+	return viper.GetBool(key)
 }

@@ -3,16 +3,17 @@ package main
 import (
 	"strings"
 
+	"gostart/pkg/cache"
+	"gostart/pkg/config"
+	"gostart/pkg/db"
+	"gostart/pkg/i18n"
+	"gostart/pkg/router"
+	log "gostart/pkg/utils/logger"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/template/html"
-
-	"go-start/pkg/cache"
-	"go-start/pkg/config"
-	"go-start/pkg/db"
-	"go-start/pkg/i18n"
-	"go-start/pkg/router"
 )
 
 // @title API
@@ -25,19 +26,25 @@ import (
 // @BasePath /api
 func main() {
 
-	port := config.Config("APP_PORT")
+	config.Load(".env")
+
+	port := config.GetString("APP_PORT")
 
 	app := fiber.New(fiber.Config{
 		Immutable: true,
-		Views:     html.New("./views", ".html"),
+		Views:     html.New("./pkg/views", ".html"),
+		ErrorHandler: func(ctx *fiber.Ctx, err error) error {
+			log.Instance().Error(log.System, log.Context{Message: err.Error(), Trace: "main"}, 0)
+			return err
+		},
 	})
 
 	allowOrigins := []string{}
 
-	if config.Config("APP_DEBUG") == "true" {
+	if config.GetString("APP_DEBUG") == "true" {
 		allowOrigins = append(allowOrigins, "*")
 	} else {
-		allowOrigins = append(allowOrigins, config.Config("APP_URL"))
+		allowOrigins = append(allowOrigins, config.GetString("APP_URL"))
 	}
 
 	app.Use(cors.New(cors.Config{
@@ -55,6 +62,8 @@ func main() {
 	router.SetupRoutes(app)
 
 	i18n.SetupI18n()
+
+	log.InitLogger(config.GetBool("APP_DEBUG"), log.MongoLogHandler)
 
 	app.Listen(":" + port)
 }

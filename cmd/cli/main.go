@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gostart/pkg/config"
 	"log"
 	"os"
 
@@ -11,6 +12,9 @@ import (
 var app = cli.NewApp()
 
 func main() {
+
+	config.Load(".env")
+
 	info()
 	commands()
 
@@ -21,7 +25,7 @@ func main() {
 }
 
 func info() {
-	app.Name = os.Getenv("APP_NAME")
+	app.Name = config.GetString("APP_NAME")
 	app.Usage = "cli app"
 	app.Author = "uslualper"
 	app.Version = "1.0.0"

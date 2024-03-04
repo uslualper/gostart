@@ -5,7 +5,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/basicauth"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
 
-	"go-start/pkg/config"
+	"gostart/pkg/config"
 )
 
 type System struct{}
@@ -14,7 +14,7 @@ func (s *System) SetupRoutes(r fiber.Router) {
 
 	systemMiddleware := r.Group("/system").Use(basicauth.New(basicauth.Config{
 		Users: map[string]string{
-			config.Config("SYSTEM_USERNAME"): config.Config("SYSTEM_PASSWORD"),
+			config.GetString("SYSTEM_USERNAME"): config.GetString("SYSTEM_PASSWORD"),
 		},
 	}))
 

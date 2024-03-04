@@ -4,7 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/swagger"
 
-	"go-start/pkg/config"
+	"gostart/pkg/config"
 )
 
 type Swagger struct{}
@@ -14,7 +14,7 @@ func (s *Swagger) SetupRoutes(r fiber.Router) {
 		DeepLinking:  false,
 		DocExpansion: "none",
 		OAuth: &swagger.OAuthConfig{
-			AppName: config.Config("APP_NAME"),
+			AppName: config.GetString("APP_NAME"),
 		},
 	}))
 }

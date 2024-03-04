@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"gostart/pkg/i18n"
+
 	"github.com/gofiber/fiber/v2"
 
-	"go-start/pkg/cache"
-	payloadScheme "go-start/pkg/schema/payload/v1/test"
-	responseScheme "go-start/pkg/schema/response/v1/test"
-	"go-start/pkg/utils/validate"
+	payloadScheme "gostart/pkg/schema/payload/v1/test"
+	responseScheme "gostart/pkg/schema/response/v1/test"
 )
 
 type Test struct{}
@@ -21,22 +21,17 @@ type Test struct{}
 // @Response 200 {object} responseScheme.Test
 // @Router /v1/test [post]
 func (t *Test) Test(c *fiber.Ctx) error {
-	testValid := new(payloadScheme.Test)
-	c.BodyParser(testValid)
-	if err := validate.ValidateStruct(testValid); err != nil {
+	testValid, err := (&payloadScheme.Test{}).Init(c)
+	if err != nil {
 		return c.Status(fiber.StatusNotAcceptable).JSON(err)
-	}
-
-	cache.Cache().Set("test", testValid.Message)
-	cacheValue, cacheErr := cache.Cache().Get("test")
-
-	if cacheErr != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(cacheErr)
 	}
 
 	testResponse := responseScheme.Test{
 		Message: testValid.Message,
-		Cache:   cacheValue,
+		Translate: map[string]string{
+			"en": i18n.Translate("en", "welcome"),
+			"tr": i18n.Translate("tr", "welcome"),
+		},
 	}
 
 	return c.JSON(testResponse)

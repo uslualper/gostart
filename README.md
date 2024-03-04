@@ -15,7 +15,10 @@ make {command}
 
 - swagger (update docs)
 
-### test
+if you get an error
+`export PATH=$(go env GOPATH)/bin:$PATH`
+
+### unit test
 
 - test
   

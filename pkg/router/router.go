@@ -3,7 +3,7 @@ package router
 import (
 	"github.com/gofiber/fiber/v2"
 
-	_ "go-start/docs"
+	_ "gostart/docs"
 )
 
 type Router interface {
